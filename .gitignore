@@ -1,0 +1,14 @@
+node_modules
+.nuxt
+.output
+.data
+dist
+.env
+.DS_Store
+*.log
+
+# Görsel hattının ara ürünleri. `public/images/` altındaki işlenmiş WebP'ler
+# repoda DURUR (721 KB); bunlar ise ham indirmeler (30 MB) ve seçim
+# aşamasının kontak baskıları. Gerekirse `npm run images` yeniden indirir.
+tools/sources/
+tools/candidates/

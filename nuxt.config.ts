@@ -34,7 +34,7 @@ export default defineNuxtConfig({
             'Projelerden arta kalan kaliteli inşaat malzemelerini keşfedin, ' +
             'ihtiyaçlarınıza uygun ürünleri avantajlı fiyatlarla değerlendirin.',
         },
-        { name: 'theme-color', content: '#0b0c0e' },
+        { name: 'theme-color', content: '#f7f6f3' },
       ],
       link: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
     },

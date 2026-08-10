@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import {
   Package, Bolt, BrickWall, TreePine, Grid3x3, Layers, Zap, Droplets, DoorOpen, Boxes,
-  ArrowUpRight,
+  ArrowRight,
 } from 'lucide-vue-next'
 import { CATEGORIES, type CategoryId } from '~/data/categories'
 import { PRODUCTS } from '~/data/products'
 
 /**
- * Kategori bölümü — sayfanın ilk açık zeminli bloğu.
- *
- * Koyu bölümlerin arasına giren bu nefes alanı olmadan sayfa tek bir uzun
- * karanlık şerit gibi okunuyor ve "premium" değil "ağır" hissettiriyor.
+ * Kategori ızgarası.
  *
  * İkonlar STATİK eşlemeden çözülüyor: `resolveComponent` veya dinamik
- * import Lucide'ın tamamını bundle'a sokuyor (5591 export).
+ * import Lucide'ın tamamını (5591 export) bundle'a sokuyor.
  */
 const ICONS = { Package, Bolt, BrickWall, TreePine, Grid3x3, Layers, Zap, Droplets, DoorOpen, Boxes }
 
@@ -21,8 +18,8 @@ const emit = defineEmits<{ pick: [CategoryId] }>()
 
 /** İlan sayısı veriden sayılıyor; elle yazılan rakam veriyle ayrışır. */
 const counts = computed(() => {
-  const map = {} as Record<string, number>
-  for (const product of PRODUCTS) map[product.categoryId] = (map[product.categoryId] ?? 0) + 1
+  const map: Record<string, number> = {}
+  for (const p of PRODUCTS) map[p.categoryId] = (map[p.categoryId] ?? 0) + 1
   return map
 })
 </script>
@@ -32,43 +29,37 @@ const counts = computed(() => {
     <div class="shell">
       <SectionHeading
         eyebrow="Kategoriler"
-        title="Aradığınız malzeme, ait olduğu grupta."
-        description="Ana yapı malzemelerinden tesisat ve şantiye gereçlerine kadar on ana grup. Bir gruba tıklayarak listeyi doğrudan filtreleyebilirsiniz."
-        tone="light"
+        title="Aradığınız malzeme, ait olduğu grupta"
+        description="Ana yapı malzemelerinden tesisat ve şantiye gereçlerine kadar on grup. Bir gruba tıklayarak listeyi doğrudan filtreleyin."
       />
 
       <ul
-        v-reveal="{ stagger: 55, children: 'li' }"
-        class="border-chalk-edge mt-12 grid grid-cols-2 gap-px border-t border-l bg-chalk-edge sm:grid-cols-3 lg:grid-cols-5"
+        v-reveal="{ stagger: 45, children: 'li' }"
+        class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
       >
         <li v-for="category in CATEGORIES" :key="category.id">
           <button
             type="button"
-            class="group relative flex h-full w-full flex-col items-start bg-chalk p-5 text-left transition-colors duration-500 ease-(--ease-out-expo) hover:bg-paper"
+            class="card group flex h-full w-full flex-col items-start p-4 text-left transition-[box-shadow,transform,border-color] duration-300 ease-(--ease-out-expo) hover:-translate-y-1 hover:border-amber hover:shadow-lift"
             @click="emit('pick', category.id)"
           >
-            <!-- Üstte büyüyen amber çizgi: hover'ın imza hareketi -->
             <span
-              class="bg-amber absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 transition-transform duration-500 ease-(--ease-out-expo) group-hover:scale-x-100"
-            />
-
-            <span class="flex w-full items-start justify-between">
-              <component
-                :is="ICONS[category.icon as keyof typeof ICONS]"
-                :size="26"
-                :stroke-width="1.25"
-                class="text-slate group-hover:text-amber transition-colors duration-400"
-              />
-              <ArrowUpRight
-                :size="16"
-                :stroke-width="1.75"
-                class="text-chalk-edge group-hover:text-ink -translate-x-1 translate-y-1 opacity-0 transition-all duration-500 ease-(--ease-out-expo) group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
-              />
+              class="bg-amber-wash text-amber-ink inline-flex size-11 items-center justify-center rounded-xl transition-colors duration-300 group-hover:bg-amber group-hover:text-white"
+            >
+              <component :is="ICONS[category.icon as keyof typeof ICONS]" :size="21" :stroke-width="1.75" />
             </span>
 
-            <span class="font-display text-ink mt-8 text-fluid-base font-semibold">{{ category.name }}</span>
-            <span class="text-slate mt-1 text-fluid-xs leading-snug">{{ category.blurb }}</span>
-            <span class="label-tech mt-4 text-[0.625rem]">{{ counts[category.id] ?? 0 }} ilan</span>
+            <span class="font-display text-ink mt-4 text-fluid-base font-semibold">{{ category.name }}</span>
+            <span class="text-mute mt-1 line-clamp-2 text-fluid-xs leading-snug">{{ category.blurb }}</span>
+
+            <span class="mt-4 flex w-full items-center justify-between">
+              <span class="pill bg-canvas text-slate">{{ counts[category.id] ?? 0 }} ilan</span>
+              <ArrowRight
+                :size="16"
+                :stroke-width="2"
+                class="text-mute group-hover:text-amber-ink transition-all duration-300 group-hover:translate-x-1"
+              />
+            </span>
           </button>
         </li>
       </ul>

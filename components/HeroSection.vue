@@ -1,154 +1,220 @@
 <script setup lang="ts">
-import { ArrowRight } from 'lucide-vue-next'
+import { Search, MapPin, ChevronDown, ShieldCheck, Truck, Tag } from 'lucide-vue-next'
+import { CATEGORIES } from '~/data/categories'
+import { CITIES, PRODUCTS } from '~/data/products'
 import { STATS } from '~/data/site'
 
 /**
- * Hero.
+ * Hero — pazaryeri girişi.
  *
- * Görsel üç katmanla tasarıma bağlanıyor: aşağıdan yukarı koyulaşan
- * degrade, blueprint ızgarası ve film graini. Fotoğraf tek başına
- * kullanıldığında "stok görsel yapıştırılmış" duruyordu; bu üç katman
- * onu sitenin dokusuna oturtuyor.
+ * Buradaki en büyük öğe manşet DEĞİL, arama kutusu. Önceki sürümde ekranı
+ * kaplayan bir manşet ve koyu fotoğraf vardı; site ilan platformu değil
+ * ajans sitesi gibi okunuyordu. Sahibinden/Letgo mantığı: kullanıcı zaten
+ * ne aradığını biliyor, ilk ekranda ona arama ve kategori verilir.
+ *
+ * Arama alanları doğrudan paylaşımlı filtre durumuna yazıyor — hero'da
+ * yazılan şey aşağıdaki grid'i anında filtreliyor, ayrı bir "arama sayfası"
+ * yok.
  */
-const scrollY = ref(0)
-const reduced = ref(false)
+const filters = useProductFilters()
+const { query, category, city } = filters
 
-function onScroll() {
-  // Parallax yalnızca hero ekrandayken hesaplanıyor; aşağıda boşuna
-  // stil yazmak uzun sayfada kaydırmayı ağırlaştırıyor.
-  scrollY.value = window.scrollY < window.innerHeight ? window.scrollY : window.innerHeight
-}
+/** Çiplerde gösterilecek ilk altı kategori; gerisi kategori bölümünde. */
+const quickCategories = CATEGORIES.slice(0, 6)
 
-onMounted(() => {
-  reduced.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (reduced.value) return
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
+/** Kategori başına ilan sayısı — çiplerde ve açılırda gösteriliyor. */
+const counts = computed(() => {
+  const map: Record<string, number> = {}
+  for (const p of PRODUCTS) map[p.categoryId] = (map[p.categoryId] ?? 0) + 1
+  return map
 })
-onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
-/** Görsel içerikten yavaş kayıyor: klasik derinlik hilesi, oran 0.18. */
-const imageShift = computed(() => (reduced.value ? 0 : scrollY.value * 0.18))
-const copyFade = computed(() => (reduced.value ? 1 : Math.max(0, 1 - scrollY.value / 620)))
-
-/** Havada süzülen toz zerrecikleri — konumlar sabit, rastgele değil. */
-const motes = [
-  { x: 12, y: 68, s: 3, d: 0, t: 19 },
-  { x: 23, y: 88, s: 2, d: 3, t: 24 },
-  { x: 37, y: 76, s: 4, d: 7, t: 21 },
-  { x: 51, y: 92, s: 2, d: 1, t: 27 },
-  { x: 64, y: 71, s: 3, d: 5, t: 18 },
-  { x: 73, y: 85, s: 2, d: 9, t: 25 },
-  { x: 84, y: 79, s: 4, d: 2, t: 22 },
-  { x: 92, y: 90, s: 2, d: 6, t: 20 },
-]
-
-function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+function goToResults() {
+  document.getElementById('malzemeler')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+function pickChip(id: string) {
+  category.value = category.value === id ? 'all' : (id as typeof category.value)
+  goToResults()
+}
+
+/** Son eklenen ilanlar şeridi; iki kez basılıyor ki kaydırma kesintisiz olsun. */
+const recent = computed(() =>
+  [...PRODUCTS].sort((a, b) => b.listedAt.localeCompare(a.listedAt)).slice(0, 7),
+)
+
+const promises = [
+  { icon: ShieldCheck, text: 'Doğrulanmış kurumsal satıcı' },
+  { icon: Tag, text: 'Piyasa altı stok fiyatı' },
+  { icon: Truck, text: 'Tek partide teslim' },
+]
 </script>
 
 <template>
-  <section id="top" class="relative isolate flex min-h-[92svh] items-end overflow-hidden pt-28 pb-14">
-    <!-- ---------- Görsel katmanı ---------- -->
-    <div class="absolute inset-0 -z-20 overflow-hidden">
-      <!-- `srcset`: dar ekranda 1920'lik dosyayı indirmenin anlamı yok.
-           `sizes="100vw"` çünkü görsel her zaman tam genişlikte. -->
-      <img
-        src="/images/hero.webp"
-        srcset="/images/hero-1280.webp 1280w, /images/hero.webp 1920w"
-        sizes="100vw"
-        alt="Gün batımında, istiflenmiş kereste sahası"
-        width="1920"
-        height="1080"
-        fetchpriority="high"
-        decoding="async"
-        class="h-[118%] w-full object-cover object-center will-change-transform"
-        :style="{ transform: `translate3d(0, ${imageShift}px, 0)` }"
-      />
-    </div>
-
-    <!-- Degrade: en güçlü karartma altta, çünkü metin orada duruyor -->
+  <section id="top" class="relative isolate overflow-hidden bg-canvas pt-28 pb-10 sm:pb-14">
+    <!-- Zemin: ölçüm ızgarası + iki yumuşak amber leke. Fotoğraf yok;
+         ürünler zaten hemen altta, hero'nun işi onlara yol açmak. -->
+    <div class="gridlines pointer-events-none absolute inset-0 -z-10 opacity-[0.45]" aria-hidden="true" />
     <div
-      class="absolute inset-0 -z-10 bg-[linear-gradient(to_top,var(--color-void)_4%,color-mix(in_oklab,var(--color-void)_88%,transparent)_34%,color-mix(in_oklab,var(--color-void)_58%,transparent)_66%,color-mix(in_oklab,var(--color-void)_72%,transparent)_100%)]"
+      class="pointer-events-none absolute -top-40 -right-24 -z-10 size-[34rem] rounded-full bg-[radial-gradient(circle,var(--color-amber-wash),transparent_68%)]"
+      aria-hidden="true"
     />
-    <div class="blueprint absolute inset-0 -z-10 opacity-[0.55]" />
-    <div class="grain absolute inset-0 -z-10" />
-
-    <!-- Ölçüm hissi veren dikey tarama çizgisi -->
     <div
-      class="animate-scan pointer-events-none absolute inset-y-0 left-0 -z-10 hidden w-px bg-[linear-gradient(to_bottom,transparent,var(--color-amber),transparent)] opacity-25 lg:left-[58%] lg:block"
+      class="pointer-events-none absolute -bottom-56 -left-32 -z-10 size-[30rem] rounded-full bg-[radial-gradient(circle,#eaf0fe,transparent_70%)]"
       aria-hidden="true"
     />
 
-    <!-- Toz zerrecikleri -->
-    <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      <span
-        v-for="(m, i) in motes"
-        :key="i"
-        class="animate-drift bg-amber/45 absolute block"
-        :style="{
-          left: `${m.x}%`,
-          top: `${m.y}%`,
-          width: `${m.s}px`,
-          height: `${m.s}px`,
-          animationDelay: `-${m.d}s`,
-          animationDuration: `${m.t}s`,
-        }"
-      />
-    </div>
+    <div class="shell">
+      <!-- Başlık bloğu: kısa ve iddiasız, yeri aramaya bırakıyor -->
+      <div class="max-w-3xl">
+        <p v-reveal="{ as: 'fade' }" class="pill border border-amber-edge bg-amber-wash text-amber-ink">
+          <span class="size-1.5 rounded-full bg-amber" />
+          İnşaat malzemeleri pazaryeri
+        </p>
 
-    <!-- ---------- İçerik ---------- -->
-    <div class="shell relative w-full" :style="{ opacity: copyFade }">
-      <!-- `lang="en"` şart: sayfa `lang="tr"` ve `text-transform: uppercase`
-           Türkçe döküm kuralını uyguluyor — "Construction" versale çevrilince
-           "CONSTRUCTİON" oluyor. Metin İngilizce olduğunu söyleyince tarayıcı
-           doğru kuralı seçiyor. -->
-      <p
-        v-reveal="{ as: 'fade' }"
-        lang="en"
-        class="eyebrow eyebrow-rule border-amber/25 bg-amber/[0.07] border px-3 py-1.5 backdrop-blur-sm"
-      >
-        Construction Material Marketplace
-      </p>
+        <h1 v-reveal="{ delay: 60 }" class="text-fluid-hero mt-4 font-semibold text-ink">
+          Proje fazlası malzeme,<br class="hidden sm:block" />
+          <span class="text-amber-ink">satın alınmaya hazır.</span>
+        </h1>
 
-      <h1
-        v-reveal="{ delay: 90 }"
-        class="text-fluid-mega mt-7 max-w-[19ch] font-semibold text-balance"
-      >
-        Bir projenin fazlası,<br />
-        <span class="text-amber">diğerinin</span> tam ihtiyacı.
-      </h1>
-
-      <p v-reveal="{ delay: 200 }" class="text-ash text-fluid-lg mt-7 max-w-[54ch] leading-relaxed">
-        Projelerden arta kalan kaliteli inşaat malzemelerini keşfedin, ihtiyaçlarınıza uygun
-        ürünleri avantajlı fiyatlarla değerlendirin.
-      </p>
-
-      <div v-reveal="{ stagger: 90, delay: 300 }" class="mt-10 flex flex-wrap items-center gap-3">
-        <button type="button" class="btn-primary" @click="scrollTo('malzemeler')">
-          Malzemeleri Keşfet
-          <ArrowRight :size="17" :stroke-width="2" />
-        </button>
-        <button type="button" class="btn-ghost backdrop-blur-sm" @click="scrollTo('nasil-calisir')">
-          Nasıl Çalışır?
-        </button>
+        <p v-reveal="{ delay: 120 }" class="text-slate mt-4 max-w-[58ch] text-fluid-lg">
+          Kurumsal projelerden artan kaliteli malzemeleri keşfedin. Fiyatı uygunsa hemen satın alın,
+          değilse kendi teklifinizi verin.
+        </p>
       </div>
 
-      <!-- Alt şerit: hero'yu sayfaya bağlayan ve platformun ölçeğini
-           ilk ekranda gösteren sayısal kanıt -->
-      <dl
-        v-reveal="{ as: 'fade', delay: 460 }"
-        class="border-steel/70 mt-14 grid grid-cols-2 gap-x-6 gap-y-7 border-t pt-8 sm:grid-cols-4"
-      >
-        <div v-for="stat in STATS" :key="stat.label">
-          <dt class="label-tech">{{ stat.label }}</dt>
-          <dd class="font-display text-bone mt-1.5 text-fluid-xl font-semibold tnum">
-            {{ stat.value.toLocaleString('tr-TR') }}{{ stat.suffix }}
-          </dd>
+      <!-- ---------- ARAMA ---------- -->
+      <div v-reveal="{ as: 'up', delay: 180 }" class="mt-8">
+        <div
+          class="card flex flex-col gap-2 p-2 shadow-lift lg:flex-row lg:items-center lg:gap-0 lg:rounded-full lg:p-1.5"
+        >
+          <!-- Metin -->
+          <div class="relative flex-1">
+            <Search
+              :size="19"
+              :stroke-width="2"
+              class="text-mute pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
+            />
+            <input
+              v-model="query"
+              type="search"
+              aria-label="Malzeme ara"
+              placeholder="Malzeme, marka veya standart ara — örn. nervürlü demir"
+              class="text-ink placeholder:text-mute h-12 w-full rounded-lg bg-transparent pr-3 pl-11 text-fluid-base focus:outline-none"
+              @keydown.enter="goToResults"
+            />
+          </div>
+
+          <span class="bg-line hidden h-7 w-px lg:block" aria-hidden="true" />
+
+          <!-- Kategori -->
+          <div class="relative lg:w-52">
+            <select
+              v-model="category"
+              aria-label="Kategori"
+              class="text-ink h-12 w-full cursor-pointer appearance-none rounded-lg bg-transparent pr-9 pl-4 text-fluid-sm focus:outline-none"
+            >
+              <option value="all">Tüm kategoriler</option>
+              <option v-for="c in CATEGORIES" :key="c.id" :value="c.id">
+                {{ c.name }} ({{ counts[c.id] ?? 0 }})
+              </option>
+            </select>
+            <ChevronDown
+              :size="16"
+              :stroke-width="2"
+              class="text-mute pointer-events-none absolute top-1/2 right-3 -translate-y-1/2"
+            />
+          </div>
+
+          <span class="bg-line hidden h-7 w-px lg:block" aria-hidden="true" />
+
+          <!-- Lokasyon -->
+          <div class="relative lg:w-48">
+            <MapPin
+              :size="17"
+              :stroke-width="2"
+              class="text-mute pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
+            />
+            <select
+              v-model="city"
+              aria-label="Lokasyon"
+              class="text-ink h-12 w-full cursor-pointer appearance-none rounded-lg bg-transparent pr-9 pl-11 text-fluid-sm focus:outline-none"
+            >
+              <option value="all">Tüm Türkiye</option>
+              <option v-for="c in CITIES" :key="c" :value="c">{{ c }}</option>
+            </select>
+            <ChevronDown
+              :size="16"
+              :stroke-width="2"
+              class="text-mute pointer-events-none absolute top-1/2 right-3 -translate-y-1/2"
+            />
+          </div>
+
+          <button type="button" class="btn-base btn-buy h-12 lg:px-7" @click="goToResults">
+            <Search :size="17" :stroke-width="2.2" class="lg:hidden" />
+            Ara
+          </button>
         </div>
-      </dl>
+
+        <!-- Hızlı kategori çipleri -->
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button
+            v-for="c in quickCategories"
+            :key="c.id"
+            type="button"
+            class="chip"
+            :class="category === c.id && 'chip-active'"
+            @click="pickChip(c.id)"
+          >
+            {{ c.name }}
+            <span class="text-mute text-fluid-xs">{{ counts[c.id] ?? 0 }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ---------- GÜVEN ŞERİDİ ---------- -->
+      <div
+        v-reveal="{ as: 'fade', delay: 260 }"
+        class="border-line mt-10 flex flex-col gap-6 border-t pt-6 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <ul class="flex flex-wrap gap-x-7 gap-y-3">
+          <li v-for="p in promises" :key="p.text" class="text-slate inline-flex items-center gap-2 text-fluid-sm">
+            <component :is="p.icon" :size="17" :stroke-width="1.75" class="text-amber-ink shrink-0" />
+            {{ p.text }}
+          </li>
+        </ul>
+
+        <dl class="flex flex-wrap gap-x-8 gap-y-3">
+          <div v-for="s in STATS.slice(0, 3)" :key="s.label" class="flex items-baseline gap-2">
+            <dt class="sr-only">{{ s.label }}</dt>
+            <dd class="font-display text-ink tnum text-fluid-lg font-semibold">
+              {{ s.value.toLocaleString('tr-TR') }}{{ s.suffix }}
+            </dd>
+            <span class="text-mute text-fluid-xs">{{ s.label }}</span>
+          </div>
+        </dl>
+      </div>
     </div>
 
+    <!-- ---------- SON EKLENENLER ŞERİDİ ----------
+         Platformun canlı olduğunu ilk ekranda gösteren detay. `aria-hidden`
+         çünkü aynı ilanlar hemen altındaki grid'de erişilebilir hâlde. -->
+    <div class="border-line mt-10 overflow-hidden border-y bg-paper py-2.5" aria-hidden="true">
+      <div class="animate-ticker flex w-max gap-3">
+        <template v-for="pass in 2" :key="pass">
+          <span
+            v-for="p in recent"
+            :key="`${pass}-${p.id}`"
+            class="text-slate inline-flex shrink-0 items-center gap-2 text-fluid-xs"
+          >
+            <span class="bg-ok size-1.5 rounded-full" />
+            <span class="text-ink font-medium">{{ p.name }}</span>
+            <span class="text-mute">{{ p.city }}</span>
+            <span class="text-amber-ink font-display font-semibold tnum">{{ formatPrice(p.price) }}</span>
+            <span class="text-line-strong px-3">/</span>
+          </span>
+        </template>
+      </div>
+    </div>
   </section>
 </template>

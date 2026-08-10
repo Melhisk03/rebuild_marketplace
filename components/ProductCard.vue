@@ -1,88 +1,113 @@
 <script setup lang="ts">
-import { MapPin, ArrowRight } from 'lucide-vue-next'
+import { MapPin, Heart, BadgeCheck } from 'lucide-vue-next'
 import type { Product } from '~/data/products'
 import { CATEGORY_BY_ID } from '~/data/categories'
 
 /**
  * Ürün kartı — sitenin en çok tekrar eden ve en çok incelenen bileşeni.
  *
- * Bilgi hiyerarşisi bilinçli: önce MİKTAR, sonra fiyat. İnşaat alıcısı
- * "bana 2,5 ton lazım" diye arıyor; miktar tutmuyorsa fiyatın önemi yok.
- * Bu yüzden miktar en büyük tipografi, fiyat onun altında.
+ * İki eylem AYNI ağırlıkta: "Satın Al" listelenen fiyattan alır, "Teklif
+ * Ver" kendi fiyatını önerir. Pazaryerinin çalışma biçimi bu; birini
+ * ikincil bir bağlantıya indirmek diğerini tek yol gibi gösteriyordu.
  *
- * Tüm kart tıklanabilir ama sarmalayıcı `<button>` DEĞİL: içeride başka
- * odaklanabilir öğe olmasa da, kart içi metin seçilebilir kalsın diye
- * `<article>` üzerine tıklama + ayrı bir gerçek buton kullanılıyor.
+ * Fiyat en büyük tipografi. Önceki sürümde miktar öndeydi; ilan platformunda
+ * kullanıcı önce fiyata bakıyor, miktar hemen yanında ikinci bilgi olarak
+ * duruyor (birim fiyat da gösterildiği için ikisi birlikte okunuyor).
  */
 const props = defineProps<{ product: Product }>()
-const emit = defineEmits<{ open: [Product] }>()
+const emit = defineEmits<{ open: [Product]; buy: [Product]; offer: [Product] }>()
 
 const hovered = ref(false)
 const category = computed(() => CATEGORY_BY_ID[props.product.categoryId])
+const favourites = useFavourites()
 </script>
 
 <template>
   <article
-    class="group surface hover:border-amber/45 relative flex cursor-pointer flex-col transition-colors duration-500 ease-(--ease-out-expo)"
+    class="card group relative flex flex-col overflow-hidden transition-[box-shadow,transform,border-color] duration-300 ease-(--ease-out-expo) hover:-translate-y-1 hover:border-line-strong hover:shadow-lift"
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
-    @click="emit('open', product)"
   >
-    <!-- Görsel alanı -->
-    <div class="relative aspect-[4/3] overflow-hidden">
+    <!-- Görsel. Tüm kart değil yalnızca bu alan ve başlık detayı açıyor;
+         kartın tamamı tıklanabilir olsaydı "Satın Al" ile yanlışlıkla
+         detay açma çakışırdı. -->
+    <button
+      type="button"
+      class="relative block aspect-[4/3] w-full overflow-hidden text-left"
+      :aria-label="`${product.name} detayını aç`"
+      @click="emit('open', product)"
+    >
       <MaterialPlate :plate="product.plate" :zoom="hovered" />
 
-      <span class="label-tech bg-void/75 text-ash absolute top-3 left-3 px-2 py-1 backdrop-blur-sm">
+      <span class="pill absolute top-3 left-3 bg-paper/90 text-slate backdrop-blur-sm">
         {{ category.name }}
       </span>
-      <ConditionBadge :condition="product.condition" class="absolute top-3 right-3" />
-    </div>
+      <ConditionBadge :condition="product.condition" class="absolute bottom-3 left-3" />
+    </button>
+
+    <!-- Favori -->
+    <button
+      type="button"
+      class="border-line bg-paper/90 absolute top-3 right-3 inline-flex size-9 items-center justify-center rounded-full border backdrop-blur-sm transition-colors duration-200 hover:border-line-strong"
+      :aria-pressed="favourites.has(product.id)"
+      :aria-label="favourites.has(product.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'"
+      @click.stop="favourites.toggle(product.id)"
+    >
+      <Heart
+        :size="17"
+        :stroke-width="1.9"
+        :class="favourites.has(product.id) ? 'fill-amber text-amber' : 'text-slate'"
+      />
+    </button>
 
     <!-- Gövde -->
-    <div class="flex flex-1 flex-col p-5">
-      <h3 class="font-display text-bone text-fluid-lg leading-tight font-semibold">
-        {{ product.name }}
+    <div class="flex flex-1 flex-col p-4">
+      <h3 class="font-display text-fluid-base leading-snug font-semibold text-ink">
+        <button type="button" class="text-left hover:text-amber-ink" @click="emit('open', product)">
+          {{ product.name }}
+        </button>
       </h3>
-      <p class="text-concrete mt-1.5 text-fluid-xs leading-snug">{{ product.headline }}</p>
+      <p class="text-mute mt-1 line-clamp-1 text-fluid-xs">{{ product.headline }}</p>
 
-      <!-- Miktar + fiyat: kartın karar verdiren kısmı -->
-      <div class="border-steel/80 mt-5 flex items-end justify-between gap-4 border-t pt-4">
+      <!-- Fiyat -->
+      <div class="mt-3 flex items-end justify-between gap-3">
         <div>
-          <p class="label-tech text-[0.625rem]">Miktar</p>
-          <p class="font-display text-bone tnum mt-1 text-fluid-xl leading-none font-semibold">
-            {{ formatQuantity(product.quantity) }}
-            <span class="text-concrete text-fluid-sm font-medium">{{ product.unit }}</span>
+          <p class="font-display text-amber-ink tnum text-fluid-xl leading-none font-bold">
+            {{ formatPrice(product.price) }}
+          </p>
+          <p class="text-mute mt-1 text-fluid-xs tnum">
+            {{ formatPrice(product.unitPrice) }} / {{ product.unit }}
           </p>
         </div>
         <div class="text-right">
-          <p class="label-tech text-[0.625rem]">Toplam</p>
-          <p class="font-display text-amber tnum mt-1 text-fluid-lg leading-none font-semibold">
-            {{ formatPrice(product.price) }}
+          <p class="label-tech text-[0.625rem]">Stok</p>
+          <p class="font-display text-ink tnum text-fluid-sm font-semibold">
+            {{ formatQuantity(product.quantity) }} {{ product.unit }}
           </p>
         </div>
       </div>
 
-      <!-- Alt satır -->
-      <div class="text-concrete mt-4 flex items-center justify-between gap-3 text-fluid-xs">
-        <span class="inline-flex min-w-0 items-center gap-1.5">
-          <MapPin :size="13" :stroke-width="1.75" class="shrink-0" />
-          <span class="truncate">{{ product.city }} · {{ product.district }}</span>
+      <!-- Satıcı ve konum -->
+      <div class="text-mute mt-3 flex items-center justify-between gap-2 text-fluid-xs">
+        <span class="inline-flex min-w-0 items-center gap-1">
+          <MapPin :size="12" :stroke-width="2" class="shrink-0" />
+          <span class="truncate">{{ product.city }}</span>
         </span>
-        <time :datetime="product.listedAt" class="shrink-0">{{ relativeDay(product.listedAt) }}</time>
+        <span class="inline-flex min-w-0 items-center gap-1">
+          <BadgeCheck v-if="product.seller.verified" :size="13" :stroke-width="2" class="text-info shrink-0" />
+          <span class="truncate">{{ product.seller.name }}</span>
+        </span>
       </div>
 
-      <button
-        type="button"
-        class="font-display text-bone group-hover:text-amber mt-5 inline-flex items-center gap-2 self-start text-fluid-sm font-medium transition-colors duration-300"
-        @click.stop="emit('open', product)"
-      >
-        Detayları Gör
-        <ArrowRight
-          :size="15"
-          :stroke-width="2"
-          class="transition-transform duration-500 ease-(--ease-out-expo) group-hover:translate-x-1"
-        />
-      </button>
+      <!-- Eylemler -->
+      <div class="mt-4 grid grid-cols-2 gap-2">
+        <button type="button" class="btn-base btn-buy w-full px-2" @click="emit('buy', product)">
+          Satın Al
+        </button>
+        <button type="button" class="btn-base btn-offer w-full px-2" @click="emit('offer', product)">
+          Teklif Ver
+        </button>
+      </div>
     </div>
   </article>
 </template>

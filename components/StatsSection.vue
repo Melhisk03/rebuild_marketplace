@@ -3,13 +3,13 @@ import { STATS } from '~/data/site'
 </script>
 
 <template>
-  <!-- İstatistik şeridi: sayfanın tek saf beyaz bloğu. Sürdürülebilirlik
-       bölümünün koyu ağırlığından hemen önce göz dinlensin diye. -->
-  <section class="bg-paper py-16 sm:py-20">
+  <!-- Platform ölçeği: ilan listesinin hemen ardında, çünkü "bu platformda
+       gerçekten mal var mı?" sorusu tam orada oluşuyor. -->
+  <section class="bg-canvas pb-(--spacing-section)">
     <div class="shell">
       <!-- `<dl>` değil `<div>`: StatCounter içinde `<p>` kullanıyor, tanım
-           listesi yalnızca `dt`/`dd` (veya onları saran `div`) kabul eder. -->
-      <div class="grid grid-cols-2 gap-px bg-chalk-edge lg:grid-cols-4">
+           listesi yalnızca dt/dd (veya onları saran div) kabul eder. -->
+      <div class="card grid grid-cols-2 divide-x divide-y divide-line lg:grid-cols-4 lg:divide-y-0">
         <StatCounter
           v-for="stat in STATS"
           :key="stat.label"

@@ -43,19 +43,19 @@ components/
   AppNavbar.vue          sticky başlık, scroll'da blur, mobil menü
   AppFooter.vue
   BrandMark.vue          logo işareti + logotip
-  HeroSection.vue        parallax, toz zerrecikleri, tarama çizgisi
+  HeroSection.vue        arama merkezli pazaryeri girişi + kategori çipleri + ilan şeridi
   SectionHeading.vue     etiket + başlık + açıklama kalıbı
   MarketplaceSection.vue arama + filtre + grid + iskelet + boş durum
   SearchFilterBar.vue    masaüstü şerit / mobil alt sayfa
   FilterSelect.vue       biçimlendirilmiş native <select>
   ProductCard.vue
-  ProductModal.vue       detay + teklif formu, tek panelde iki görünüm
-  QuoteForm.vue          gerçek doğrulama + sahte gönderim + başarı durumu
+  ProductModal.vue       detay + satın alma + teklif, tek panelde üç görünüm
+  DealPanel.vue          Satın Al / Teklif Ver akışı: miktar, KDV'li özet, doğrulama
   MaterialPlate.vue      ★ üretilmiş vektör malzeme plakaları (14 tür)
   ConditionBadge.vue
   SkeletonCard.vue
-  CategorySection.vue    açık zeminli kategori ızgarası
-  FeaturedMaterial.vue   editoryal öne çıkan ürün düzeni
+  CategorySection.vue    kategori ızgarası
+  FeaturedMaterial.vue   öne çıkan ilan: fotoğraf + teknik künye + doğrudan satın alma
   ValueSection.vue       "Artan malzeme, azalan maliyet"
   StatsSection.vue / StatCounter.vue
   SustainabilitySection.vue
@@ -63,6 +63,7 @@ components/
   CtaSection.vue
 composables/
   useProductFilters.ts   paylaşımlı filtre durumu (useState), Türkçe arama katlaması
+  useFavourites.ts       favori ilanlar
   useCountUp.ts
   useFocusTrap.ts        modal: odak tuzağı + gövde kilidi + Esc
 data/
@@ -144,65 +145,76 @@ Dikkat edilecekler:
 
 Sunumda göstermeye değer, kolayca gözden kaçan yerler:
 
-1. **Hero'da kaydırma.** Fotoğraf içerikten yavaş kayıyor (parallax 0.18) ve
-   metin kaydırdıkça soluyor — sayfa "canlı" hissini ilk buradan veriyor.
+1. **Hero arama kutusu gerçekten çalışıyor.** Sayfanın en büyük öğesi manşet
+   değil arama. Yazdığınız terim, seçtiğiniz kategori ve lokasyon doğrudan
+   aşağıdaki listeyi filtreliyor — ayrı bir "arama sonuçları sayfası" yok.
 
-2. **Başlığın dönüşümü.** Sayfa başında başlık şeffaf; 24px kaydırınca zemin
-   bulanıklaşıp kenarlık beliriyor. Aşağı-yukarı bir tur atarak gösterin.
+2. **Türkçe aramayı biliyor.** Aksansız **"cimento"** yazın, "Çimento"yu
+   bulur. Teknik özellikler de aranıyor: **"B420C"** veya **"TS EN 10080"**.
 
-3. **Arama gerçekten çalışıyor ve Türkçe'yi biliyor.** Arama kutusuna
-   aksansız **"cimento"** yazın — "Çimento" ürününü bulur. Teknik özellikler
-   de aranıyor: **"B420C"** veya **"TS EN 10080"** deneyin.
+3. **Satın Al ve Teklif Ver eşit ağırlıkta.** Pazaryerinin iki yolu bu:
+   fiyat uygunsa doğrudan alım, değilse pazarlık. Kartta ikisi de birincil
+   düğme; birini bağlantıya indirmek diğerini tek yol gibi gösteriyordu.
 
-4. **Filtre değişince iskelet.** Kategoriyi değiştirin; 260 ms'lik yükleme
-   iskeleti gerçek bir istek hissi veriyor. Veri yerel, teknik gereklilik
-   değil — bilinçli bir UX tercihi.
+4. **Satın Al akışı hesap yapıyor.** Miktarı azaltıp artırın — ara toplam,
+   %20 KDV ve genel toplam anında güncelleniyor. Kısmi alım destekleniyor
+   (2,5 tonun 1,2 tonunu alabilirsiniz).
 
-5. **Kategori kartları grid'i filtreliyor.** Kategoriler bölümünde bir karta
-   tıklayın: filtre kurulur ve sayfa listeye kayar. İki ayrı bölüm aynı
-   duruma dokunuyor.
+5. **Teklif Ver'de pazarlık var.** Birim fiyat alanı liste fiyatının %10
+   altıyla açılıyor ve altında canlı bir fark göstergesi duruyor:
+   *"Liste fiyatı ₺265 — teklifiniz %10 altında."* Fiyatı değiştirin, oran
+   ve toplam birlikte değişiyor.
 
-6. **Ürün kartında hiyerarşi.** Fiyat değil **MİKTAR** en büyük tipografi.
-   İnşaat alıcısı önce "2,5 ton var mı?" diye bakar; miktar tutmuyorsa fiyatın
-   önemi yok. Müşteriye bunu söyleyin, fark edilir bir detay.
+6. **Formu boş gönderin.** Doğrulama gerçek: dört alan da hata veriyor ve
+   odak ilk hatalı alana gidiyor. Sonra doldurup gönderin — sipariş/teklif
+   numarasıyla özet ekranı geliyor.
 
-7. **Modal → teklif formu → başarı.** Bir karta tıklayın, **Teklif İste**'ye
-   basın, formu **boş gönderin** — doğrulama gerçek. Sonra doldurup gönderin;
-   talep numarasıyla başarı ekranı gelir. `Esc` ile kapanır, odak tıkladığınız
-   karta geri döner.
+7. **Scroll'da başlığa arama beliriyor.** 220px aşağı inince navbar'a küçük
+   bir arama alanı giriyor. Pazaryerinde arama her an erişilebilir olmalı.
 
-8. **Ürün görselleri fotoğraf değil.** 14 kartın görseli
-   `MaterialPlate.vue` içinde üretilen vektör malzeme dokularıdır (nervür
-   deseni, tuğla örgüsü, boru kesiti, oluklu sac…). Grid'deki tutarlılığın
-   sebebi bu — dağınık stok fotoğrafla bu görüntü elde edilemiyor. Toplam
-   ağırlıkları birkaç KB ve her ölçekte keskin.
+8. **Favoriler çalışıyor.** Karttaki kalbe basın; navbar'daki sayaç artıyor.
 
-9. **Fotoğraflar tek gradasyondan geçti.** Hero, sürdürülebilirlik ve öne
-   çıkan ürün gerçek fotoğraf; üçü de aynı soğuk duotone eğrisinden geçirildi
-   (`tools/build-images.mjs`). Farklı fotoğrafçılardan gelmelerine rağmen tek
-   çekim gibi duruyorlar.
+9. **Kategori kartları listeyi filtreliyor.** Kategoriler bölümünde bir karta
+   tıklayın: filtre kurulur ve sayfa listeye kayar.
 
-10. **Mobilde filtre alt sayfası.** 390px'te "Filtrele" butonu alttan açılan
-    bir sayfa getiriyor; alttaki buton canlı sonuç sayısını gösteriyor
-    (*"2 sonucu gör"*). Masaüstündeki yatay şeritten farklı bir düzen.
+10. **Ürün görselleri fotoğraf değil.** 14 kartın görseli `MaterialPlate.vue`
+    içinde üretilen vektör malzeme dokularıdır (nervür deseni, tuğla örgüsü,
+    boru kesiti, oluklu sac…). Grid'deki tutarlılığın sebebi bu; dağınık stok
+    fotoğrafla bu görüntü elde edilemiyor. Toplam ağırlıkları birkaç KB.
 
-11. **Erişilebilirlik.** Sekme tuşuyla gezin: odak halkaları amber, modal
-    içinde odak hapsoluyor, `Esc` kapatıyor. İşletim sisteminde "hareketi
-    azalt" açıksa tüm animasyonlar kapanıyor ve sayaçlar son değeri basıyor.
+11. **Mobilde filtre alt sayfası.** 390px'te "Filtrele" butonu alttan açılan
+    bir sayfa getiriyor; alttaki buton canlı sonuç sayısını gösteriyor.
+
+12. **Erişilebilirlik.** Sekmeyle gezin: odak halkaları amber, modal içinde
+    odak hapsoluyor, `Esc` kapatıyor ve odak tıkladığınız karta dönüyor.
+    "Hareketi azalt" açıksa tüm animasyonlar kapanıyor.
+
+### Tasarım kararları
+
+- **Açık tema.** İlk sürüm koyu zeminliydi ve ilan platformundan çok ajans
+  sitesi gibi okunuyordu. Artık beyaz/kırık beyaz zemin, beyaz kart, yumuşak
+  gölge; koyu yalnızca iki yerde: alt CTA şeridi ve footer.
+- **Manşet küçüldü, arama büyüdü.** Pazaryerinde en büyük öğe arama kutusudur.
+- **Fiyat en büyük tipografi.** Önceki sürümde miktar öndeydi; ilan
+  platformunda kullanıcı önce fiyata bakıyor. Miktar hemen yanında, birim
+  fiyat da gösterildiği için ikisi birlikte okunuyor.
+- **Amber yalnızca eylemde.** Fiyat, birincil buton, aktif filtre. Dekorasyon
+  olarak kullanılmıyor.
 
 ### Bilinçli sınırlar
 
-- Backend yok: teklif formu veri göndermiyor, form altında bunu söyleyen bir
-  not var.
+- Backend yok: sipariş ve teklif gönderimi taklit ediliyor, form altında
+  bunu söyleyen bir not var.
 - Ürün detayları modalde açılıyor; ayrı URL'si yok (tek sayfa demo).
 - İstatistikler ve etki rakamları temsilîdir.
 - Fiyatlar 2026 Türkiye piyasasına yakın seçildi ve
   `birim fiyat × miktar = toplam` her satırda tutuyor (`npm run check:data`).
+- KDV %20 sabit; gerçek üründe malzeme grubuna göre değişebilir.
 
 ### Görsel lisansları
 
-`public/images/CREDITS.md` — üç fotoğrafın da kaynağı, sahibi ve lisansı
+`public/images/CREDITS.md` — üç fotoğrafın kaynağı, sahibi ve lisansı
 listelidir. İkisi kamu malı / CC0, biri CC BY-SA 4.0 (atıf zorunlu).
-Müşteri kendi şantiye fotoğraflarını kullanmak isterse `tools/build-images.mjs`
-içindeki `SOURCES` dizisine yerel dosya yolu verip `npm run images`
-çalıştırmak yeterli; gradasyon aynı kalır.
+Müşteri kendi şantiye fotoğraflarını kullanmak isterse
+`tools/build-images.mjs` içindeki `SOURCES` dizisine yerel dosya yolu verip
+`npm run images` çalıştırmak yeterli; gradasyon aynı kalır.

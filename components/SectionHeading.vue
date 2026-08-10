@@ -1,39 +1,36 @@
 <script setup lang="ts">
 /**
  * Bölüm başlığı kalıbı: etiket + başlık + isteğe bağlı açıklama.
- *
- * Sayfadaki her bölüm bunu kullanıyor; ritmi tek yerden değiştirebilmek
- * için ayrı bileşen. `tone` açık zeminli bölümlerde metin rengini çeviriyor.
+ * `tone` yalnızca koyu CTA/footer şeritlerinde çevriliyor.
  */
 withDefaults(
   defineProps<{
     eyebrow: string
     title: string
     description?: string
-    tone?: 'dark' | 'light'
-    align?: 'start' | 'center'
+    tone?: 'light' | 'dark'
   }>(),
-  { tone: 'dark', align: 'start' },
+  { tone: 'light' },
 )
 </script>
 
 <template>
-  <div :class="align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-3xl'">
-    <p v-reveal="{ as: 'fade' }" class="eyebrow" :class="align === 'start' && 'eyebrow-rule'">
+  <div class="max-w-3xl">
+    <p v-reveal="{ as: 'fade' }" class="eyebrow" :class="tone === 'dark' && 'text-amber'">
       {{ eyebrow }}
     </p>
     <h2
-      v-reveal="{ delay: 80 }"
-      class="text-fluid-3xl mt-5 font-semibold"
-      :class="tone === 'dark' ? 'text-bone' : 'text-ink'"
+      v-reveal="{ delay: 70 }"
+      class="text-fluid-3xl mt-3 font-semibold"
+      :class="tone === 'light' ? 'text-ink' : 'text-bone'"
     >
       {{ title }}
     </h2>
     <p
       v-if="description"
-      v-reveal="{ delay: 150 }"
-      class="text-fluid-base mt-4 max-w-[62ch] leading-relaxed"
-      :class="tone === 'dark' ? 'text-ash' : 'text-slate'"
+      v-reveal="{ delay: 130 }"
+      class="text-fluid-base mt-3 max-w-[62ch]"
+      :class="tone === 'light' ? 'text-slate' : 'text-ash'"
     >
       {{ description }}
     </p>

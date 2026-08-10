@@ -1,45 +1,70 @@
 <script setup lang="ts">
-import { ArrowUpRight, Mail } from 'lucide-vue-next'
+import { Plus, Mail, ArrowRight } from 'lucide-vue-next'
+
+/**
+ * Satıcı çağrısı.
+ *
+ * Sayfanın tek koyu şeridi. Bilinçli: baştan sona açık bir sayfada tek bir
+ * koyu blok "burada karar ver" diyor; her yeri koyu yapmak bu vurguyu
+ * tamamen yok ediyordu.
+ */
+const points = [
+  'İlan vermek ücretsiz',
+  'Komisyon yalnızca satışta',
+  'Kurumsal toplu stok aktarımı',
+]
 </script>
 
 <template>
-  <section id="ilan-ver" class="relative isolate overflow-hidden bg-void">
-    <!-- Amber, kenardan sızan tek bir ışık olarak: dolu turuncu bir blok
-         bütün sayfanın tonunu bozuyordu. -->
+  <section id="ilan-ver" class="relative isolate overflow-hidden bg-carbon">
+    <div class="gridlines-dark pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
+    <!-- Hero'dan artan fotoğraf burada doku olarak: koyu şeridi düz bir
+         renk bloğu olmaktan çıkarıyor. -->
+    <img
+      src="/images/hero-1280.webp"
+      alt=""
+      aria-hidden="true"
+      width="1280"
+      height="720"
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 h-full w-full object-cover opacity-[0.16]"
+    />
     <div
-      class="pointer-events-none absolute -top-1/2 left-1/2 -z-10 h-[36rem] w-[72rem] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_oklab,var(--color-amber)_16%,transparent),transparent_68%)] blur-2xl"
+      class="absolute inset-0 bg-[linear-gradient(100deg,var(--color-carbon)_28%,transparent_120%)]"
       aria-hidden="true"
     />
-    <div class="blueprint absolute inset-0 -z-10 opacity-50" aria-hidden="true" />
 
     <div class="shell relative py-(--spacing-section)">
-      <div class="border-steel bg-graphite/60 border px-6 py-14 backdrop-blur-sm sm:px-12 sm:py-20">
-        <div class="mx-auto max-w-3xl text-center">
-          <p v-reveal="{ as: 'fade' }" class="eyebrow justify-center">Satıcı Olun</p>
-
-          <h2 v-reveal="{ delay: 80 }" class="text-fluid-3xl mt-6 font-semibold text-balance">
+      <div class="grid items-center gap-9 lg:grid-cols-[1.1fr_auto]">
+        <div>
+          <p v-reveal="{ as: 'fade' }" class="eyebrow text-amber">Satıcı olun</p>
+          <h2 v-reveal="{ delay: 70 }" class="text-fluid-3xl text-bone mt-3 font-semibold">
             Elinizde fazla malzeme mi var?
           </h2>
-
-          <p v-reveal="{ delay: 150 }" class="text-ash mx-auto mt-5 max-w-[52ch] text-fluid-lg leading-relaxed">
-            Projelerinizden kalan malzemeleri yeni sahipleriyle buluşturun. İlan vermek
-            ücretsiz, komisyon yalnızca satış gerçekleştiğinde alınır.
+          <p v-reveal="{ delay: 130 }" class="text-ash mt-4 max-w-[52ch] text-fluid-lg">
+            Projelerinizden kalan malzemeleri yeni sahipleriyle buluşturun. Stok fazlanız
+            maliyet olmaktan çıkıp gelire dönüşsün.
           </p>
 
-          <div v-reveal="{ stagger: 90, delay: 240 }" class="mt-10 flex flex-wrap justify-center gap-3">
-            <a href="#malzemeler" class="btn-primary">
-              Malzeme Listele
-              <ArrowUpRight :size="16" :stroke-width="2" />
-            </a>
-            <a href="mailto:info@donguselyapi.com" class="btn-ghost">
-              <Mail :size="16" :stroke-width="1.75" />
-              Bizimle İletişime Geç
-            </a>
-          </div>
+          <ul v-reveal="{ as: 'fade', delay: 180 }" class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            <li v-for="p in points" :key="p" class="text-ash inline-flex items-center gap-2 text-fluid-sm">
+              <span class="bg-amber size-1.5 rounded-full" />
+              {{ p }}
+            </li>
+          </ul>
+        </div>
 
-          <p v-reveal="{ as: 'fade', delay: 320 }" class="text-concrete mt-8 text-fluid-xs">
-            Kurumsal firmalar için toplu stok aktarımı ve API entegrasyonu mevcuttur.
-          </p>
+        <div v-reveal="{ as: 'up', delay: 220 }" class="flex flex-col gap-2.5 sm:flex-row lg:flex-col">
+          <a href="#malzemeler" class="btn-base btn-buy">
+            <Plus :size="16" :stroke-width="2.4" />
+            Malzeme Listele
+            <ArrowRight :size="15" :stroke-width="2" />
+          </a>
+          <a href="mailto:info@donguselyapi.com" class="btn-base btn-on-dark">
+            <Mail :size="16" :stroke-width="1.9" />
+            Bizimle İletişime Geç
+          </a>
         </div>
       </div>
     </div>

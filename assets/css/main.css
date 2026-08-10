@@ -8,114 +8,105 @@
    (`--color-amber` -> `bg-amber`, `text-amber`, `border-amber`).
    Ayrı bir `tailwind.config.js` YOK.
 
-   Görsel yön: dark industrial + premium minimalism.
-   Koyu bölümler taşıyıcı, açık bölümler nefes aldırıcı, amber yalnızca
-   yön gösterdiği yerde. Amber'i dekorasyon olarak kullanma — bir ekranda
-   üçten fazla amber vurgusu varsa biri fazladır.
+   Görsel yön: AÇIK, ürün odaklı pazaryeri.
+   Sayfa beyaz/kırık beyaz zemin üzerinde kurulu; ürün kartı beyaz, kenarlığı
+   ince, gölgesi yumuşak. Koyu yalnızca iki yerde: alt CTA şeridi ve footer.
+   Gerekçe: koyu zeminli ilk sürüm "ajans sitesi" gibi okunuyordu — ilan
+   listeleyen bir platformda ürün öne çıkmalı, sayfa değil.
+
+   Amber tek vurgu rengi ve YALNIZCA eyleme çağıran yerlerde: fiyat, birincil
+   buton, aktif filtre. Dekorasyon olarak kullanma.
    ============================================================ */
 
 @theme {
-  /* — Yüzeyler —
-     Koyudan açığa doğru altı kademe. Kart, koyu zeminde bir üst kademeye
-     çıkarak yükseliyor; gölge yerine kademe kullanılıyor, çünkü koyu
-     zeminde gölge okunmuyor. */
-  --color-void: #0a0b0d; /* sayfa zemini, en dip */
-  --color-carbon: #101216; /* bölüm zemini */
-  --color-graphite: #171a1f; /* kart zemini */
-  --color-steel: #22262d; /* kart üzeri, hover */
-  --color-iron: #333941; /* ayraç ve kenarlık */
+  /* — Zeminler (açıktan koyuya) — */
+  --color-paper: #ffffff; /* kart, açılır, modal */
+  --color-canvas: #f7f6f3; /* sayfa zemini, hafif sıcak */
+  --color-chalk: #efede8; /* dönüşümlü bölüm zemini */
+  --color-line: #e4e1db; /* varsayılan kenarlık */
+  --color-line-strong: #cdc9c1; /* hover kenarlığı, ayraç */
 
   /* — Metin — */
-  --color-bone: #f2f1ee; /* koyu üzeri birincil metin (saf beyaz değil) */
-  --color-ash: #a8aeb5; /* koyu üzeri ikincil metin */
-  --color-concrete: #7d848c; /* etiket, placeholder, üçüncül */
+  --color-ink: #15171b; /* birincil */
+  --color-slate: #565c65; /* ikincil, gövde */
+  --color-mute: #8b9098; /* etiket, placeholder, üçüncül */
 
-  /* — Açık bölümler — */
-  --color-paper: #ffffff;
-  --color-chalk: #efede8; /* beton grisi off-white */
-  --color-chalk-edge: #dedbd4; /* açık zemin üzeri kenarlık */
-  --color-ink: #14161a; /* açık üzeri birincil metin */
-  --color-slate: #5c626a; /* açık üzeri ikincil metin */
+  /* — Koyu bölümler (yalnızca CTA ve footer) — */
+  --color-carbon: #14161a;
+  --color-carbon-soft: #1e2126;
+  --color-carbon-line: #2e323a;
+  --color-bone: #f3f2ef; /* koyu üzeri metin */
+  --color-ash: #a4aab2; /* koyu üzeri ikincil metin */
 
   /* — Vurgu —
-     Sıcak turuncu; inşaat şeridi ve vinç sarısından geliyor ama
-     doygunluğu düşürülmüş, neon durmasın diye. */
-  --color-amber: #ff7a1a;
-  --color-amber-soft: #ff9440; /* hover */
-  --color-amber-deep: #d9600b; /* basılı hâl, açık zeminde metin */
+     `amber` dolgu ve rozetlerde; `amber-ink` beyaz üzerine YAZI için —
+     #ff7a1a beyazda 2.3:1 kontrast veriyor, metin olarak okunmuyor. */
+  --color-amber: #f97316;
+  --color-amber-hover: #ea6a0c;
+  --color-amber-ink: #c2540a;
+  --color-amber-wash: #fff3e9; /* çok açık amber zemin */
+  --color-amber-edge: #ffd9bb;
 
-  /* — Durum renkleri — ilan durumu rozetleri için, hepsi düşük doygunlukta */
-  --color-state-new: #4ade80;
-  --color-state-open: #60a5fa;
-  --color-state-used: #fbbf24;
+  /* — Durum — */
+  --color-ok: #15803d;
+  --color-ok-wash: #eaf7ee;
+  --color-info: #1d4ed8;
+  --color-info-wash: #eaf0fe;
+  --color-warn: #a16207;
+  --color-warn-wash: #fdf6e3;
 
-  /* — Tipografi —
-     İki aile ve ayrımı korumak kritik:
-     Space Grotesk -> başlık, rakam, teknik etiket. Karakterli grotesk,
-       rakamları tabular ve dar; fiyat ve miktar tablolarında hizalanıyor.
-     Inter -> gövde metni. Uzun paragrafta Space Grotesk yoruyor. */
+  /* — Tipografi — */
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, monospace;
 
-  /* Ölçek akışkan: sabit punto yazma, buradan birini seç. Değerler 1440px
-     tasarım genişliğine göre oranlandı, iki uca sınır konuldu. */
   --text-fluid-xs: clamp(0.6875rem, 0.66rem + 0.14vw, 0.75rem);
   --text-fluid-sm: clamp(0.8125rem, 0.79rem + 0.14vw, 0.875rem);
   --text-fluid-base: clamp(0.9375rem, 0.91rem + 0.14vw, 1rem);
   --text-fluid-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
   --text-fluid-xl: clamp(1.25rem, 1.13rem + 0.6vw, 1.625rem);
   --text-fluid-2xl: clamp(1.5rem, 1.26rem + 1.2vw, 2.25rem);
-  --text-fluid-3xl: clamp(1.875rem, 1.4rem + 2.4vw, 3.25rem);
-  --text-fluid-4xl: clamp(2.25rem, 1.4rem + 4.2vw, 4.5rem);
-  --text-fluid-mega: clamp(2.75rem, 1.2rem + 7.7vw, 7rem);
+  --text-fluid-3xl: clamp(1.75rem, 1.4rem + 1.8vw, 2.75rem);
+  /* Manşet bilinçli olarak KÜÇÜLDÜ: eski `mega` ölçek (7rem'e kadar)
+     sayfayı editoryal bir ajans sitesine çeviriyordu. Pazaryerinde en
+     büyük öğe manşet değil, arama kutusu. */
+  --text-fluid-hero: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
 
-  /* — Hareket —
-     Tek easing ailesi; bütün geçişler aynı fiziği paylaşsın. */
+  /* — Hareket — */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 
+  /* — Gölge —
+     Açık tasarımda derinlik gölgeyle kuruluyor. İki kademe yeterli:
+     duran kart ve kalkan kart. Üçüncü bir kademe eklemek hiyerarşiyi
+     netleştirmiyor, sadece sayfayı bulanıklaştırıyor. */
+  --shadow-card: 0 1px 2px rgb(21 23 27 / 0.04), 0 1px 3px rgb(21 23 27 / 0.06);
+  --shadow-lift: 0 8px 16px -6px rgb(21 23 27 / 0.1), 0 18px 36px -12px rgb(21 23 27 / 0.14);
+  --shadow-pop: 0 24px 60px -20px rgb(21 23 27 / 0.28);
+
   /* — Düzen — */
-  --spacing-gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2rem);
-  --spacing-section: clamp(4.5rem, 2.5rem + 7vw, 8.5rem);
-  --container-shell: 82.5rem; /* 1320px kap */
+  --spacing-gutter: clamp(1rem, 0.7rem + 1.5vw, 2rem);
+  --spacing-section: clamp(3.5rem, 2.2rem + 5vw, 6rem);
+  --container-shell: 84rem;
 
-  /* — Animasyonlar — */
+  /* — Animasyon — */
   --animate-shimmer: shimmer 1.6s linear infinite;
-  --animate-scan: scan 7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-drift: drift 22s linear infinite;
+  --animate-ticker: ticker 42s linear infinite;
 
-  /* Yükleme iskeletindeki ışık süpürmesi */
   @keyframes shimmer {
     100% {
       transform: translateX(200%);
     }
   }
 
-  /* Hero'daki dikey tarama çizgisi — endüstriyel ölçüm hissi */
-  @keyframes scan {
-    0%,
-    100% {
-      transform: translateY(-8%);
-      opacity: 0;
-    }
-    12%,
-    88% {
-      opacity: 1;
-    }
-    50% {
-      transform: translateY(108%);
-    }
-  }
-
-  /* Hero'daki toz zerrecikleri */
-  @keyframes drift {
+  /* Hero altındaki "son eklenenler" şeridi */
+  @keyframes ticker {
     from {
-      transform: translate3d(0, 0, 0);
+      transform: translateX(0);
     }
     to {
-      transform: translate3d(0, -140px, 0);
+      transform: translateX(-50%);
     }
   }
 }
@@ -128,10 +119,10 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /* Sticky başlık, çapaya kaydırınca bölüm başlığını örtmesin. */
+    scroll-padding-top: 5.5rem;
   }
 
-  /* Yatay taşma bu tasarımda en olası regresyon: hero'daki geniş tipografi
-     ve yatay kayan filtre şeridi mobilde kabı zorluyor. Kökten kilitleniyor. */
   html,
   body {
     overflow-x: clip;
@@ -140,9 +131,9 @@
   body {
     font-family: var(--font-sans);
     font-size: var(--text-fluid-base);
-    line-height: 1.65;
-    background-color: var(--color-void);
-    color: var(--color-bone);
+    line-height: 1.6;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     font-feature-settings: 'cv02', 'cv03', 'cv04';
   }
 
@@ -152,31 +143,26 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 600;
-    line-height: 1.05;
-    letter-spacing: -0.025em;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
-  /* Rakamlar her yerde tabular: fiyat ve miktar sütunları kaymasın. */
-  :is(.tnum, table, [data-numeric]) {
+  :is(.tnum, [data-numeric]) {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Odak halkası tek yerden. `:focus-visible` kullanılıyor ki fare ile
-     tıklayanda çıkmasın, klavyeyle gezenlerde her zaman çıksın. */
   :focus-visible {
     outline: 2px solid var(--color-amber);
-    outline-offset: 3px;
-    border-radius: 2px;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
   ::selection {
     background: var(--color-amber);
-    color: #000;
+    color: #fff;
   }
 
-  /* Hareket tercihi: tek yerden, istisnasız. Yeni animasyon eklerken bu
-     bloğa güvenebilirsin, ayrıca kontrol yazmaya gerek yok. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -194,7 +180,6 @@
 
 /* ============================================================
    YARDIMCI SINIFLAR
-   Aynı sınıf dizisi üçüncü kez tekrarlanıyorsa buraya çıkar.
    ============================================================ */
 
 @utility shell {
@@ -204,183 +189,222 @@
   padding-inline: var(--spacing-gutter);
 }
 
-/* Bölüm üstü küçük etiket: AMBER, HARF ARALIKLI, VERSAL */
 @utility eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.6em;
+  gap: 0.5em;
   font-family: var(--font-display);
   font-size: var(--text-fluid-xs);
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-amber);
+  color: var(--color-amber-ink);
 }
 
-/* Etiketin önündeki kısa çizgi — bölüm başlıklarının imza detayı */
-@utility eyebrow-rule {
-  &::before {
-    content: '';
-    width: 1.75rem;
-    height: 1px;
-    background: currentColor;
-    opacity: 0.55;
-  }
-}
-
-/* Teknik veri etiketi: küçük, versal, sönük */
 @utility label-tech {
   font-family: var(--font-display);
   font-size: var(--text-fluid-xs);
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-concrete);
+  color: var(--color-mute);
 }
 
-/* Blueprint ızgarası. Koyu bölümlerin altındaki teknik doku; tek başına
-   fark edilmez ama kaldırıldığında bölüm boş hissettirir. */
-@utility blueprint {
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--color-iron) 42%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--color-iron) 42%, transparent) 1px, transparent 1px);
-  background-size: 72px 72px;
+/* Kart yüzeyi: beyaz, ince kenarlık, yumuşak gölge */
+@utility card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-card);
 }
 
-/* Fotoğrafların ve koyu bölümlerin üzerine binen ince film graini.
-   Görselleri tasarımla aynı dokuya oturtuyor; hibrit görsel dilde
-   üretilmiş plakalarla fotoğrafları aynı ailede tutan şey bu. */
-@utility grain {
-  position: relative;
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.42;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  }
-}
-
-/* Birincil buton: dolu amber. Sayfada bir ekranda tek tane olmalı. */
-@utility btn-primary {
+/* — Butonlar —
+   Yuvarlatma 0.625rem: keskin köşe endüstriyel ama sert duruyordu, tam
+   yuvarlak (pill) ise tüketici uygulaması hissi veriyor. Arası B2B için
+   doğru yer. */
+@utility btn-base {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.625rem;
   font-family: var(--font-display);
   font-size: var(--text-fluid-sm);
   font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #0a0b0d;
-  background: var(--color-amber);
-  border: 1px solid var(--color-amber);
+  line-height: 1;
   cursor: pointer;
+  white-space: nowrap;
   transition:
-    background-color 260ms var(--ease-out-expo),
-    border-color 260ms var(--ease-out-expo),
-    transform 260ms var(--ease-out-expo);
-  &:hover {
-    background: var(--color-amber-soft);
-    border-color: var(--color-amber-soft);
-  }
+    background-color 220ms var(--ease-out-expo),
+    border-color 220ms var(--ease-out-expo),
+    color 220ms var(--ease-out-expo),
+    box-shadow 220ms var(--ease-out-expo),
+    transform 220ms var(--ease-out-expo);
   &:active {
     transform: translateY(1px);
   }
   &:disabled {
-    opacity: 0.45;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 }
 
-/* İkincil buton: koyu zeminde konturlu */
-@utility btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  font-family: var(--font-display);
-  font-size: var(--text-fluid-sm);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--color-bone);
-  background: transparent;
-  border: 1px solid var(--color-iron);
-  cursor: pointer;
-  transition:
-    border-color 260ms var(--ease-out-expo),
-    background-color 260ms var(--ease-out-expo),
-    color 260ms var(--ease-out-expo);
+/* SATIN AL — sayfadaki tek dolu amber eylem */
+@utility btn-buy {
+  color: #fff;
+  background: var(--color-amber);
+  border: 1px solid var(--color-amber);
+  box-shadow: 0 1px 2px rgb(217 96 11 / 0.28);
   &:hover {
-    border-color: color-mix(in oklab, var(--color-bone) 55%, transparent);
-    background: color-mix(in oklab, var(--color-bone) 6%, transparent);
+    background: var(--color-amber-hover);
+    border-color: var(--color-amber-hover);
   }
 }
 
-/* Açık zeminde ikincil buton */
-@utility btn-ghost-light {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  font-family: var(--font-display);
-  font-size: var(--text-fluid-sm);
-  font-weight: 500;
-  letter-spacing: 0.04em;
+/* TEKLİF VER — eşit ağırlıkta ama nötr; ikisi de birincil eylem */
+@utility btn-offer {
   color: var(--color-ink);
-  background: transparent;
-  border: 1px solid var(--color-chalk-edge);
-  cursor: pointer;
-  transition:
-    border-color 260ms var(--ease-out-expo),
-    background-color 260ms var(--ease-out-expo);
+  background: var(--color-paper);
+  border: 1px solid var(--color-line-strong);
   &:hover {
     border-color: var(--color-ink);
-    background: color-mix(in oklab, var(--color-ink) 4%, transparent);
+    background: var(--color-chalk);
   }
 }
 
-/* Kart yüzeyi: koyu zeminde bir kademe yukarı + ince kenarlık */
-@utility surface {
-  background: var(--color-graphite);
-  border: 1px solid var(--color-steel);
+@utility btn-quiet {
+  color: var(--color-slate);
+  background: transparent;
+  border: 1px solid var(--color-line);
+  &:hover {
+    color: var(--color-ink);
+    border-color: var(--color-line-strong);
+    background: var(--color-paper);
+  }
+}
+
+/* Koyu bölümlerdeki ikincil buton */
+@utility btn-on-dark {
+  color: var(--color-bone);
+  background: transparent;
+  border: 1px solid var(--color-carbon-line);
+  &:hover {
+    border-color: color-mix(in oklab, var(--color-bone) 55%, transparent);
+    background: color-mix(in oklab, var(--color-bone) 8%, transparent);
+  }
+}
+
+/* Hızlı filtre çipi (hero ve kategori şeridi) */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  font-family: var(--font-display);
+  font-size: var(--text-fluid-sm);
+  font-weight: 500;
+  color: var(--color-slate);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease-out-expo),
+    color 200ms var(--ease-out-expo),
+    background-color 200ms var(--ease-out-expo);
+  &:hover {
+    border-color: var(--color-line-strong);
+    color: var(--color-ink);
+  }
+}
+
+@utility chip-active {
+  border-color: var(--color-amber);
+  background: var(--color-amber-wash);
+  color: var(--color-amber-ink);
+}
+
+/* Küçük bilgi rozeti */
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Form alanı */
+@utility field {
+  width: 100%;
+  padding: 0.7rem 0.875rem;
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: var(--text-fluid-sm);
+  transition:
+    border-color 200ms var(--ease-out-expo),
+    box-shadow 200ms var(--ease-out-expo);
+  &::placeholder {
+    color: var(--color-mute);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--color-amber);
+    box-shadow: 0 0 0 3px var(--color-amber-wash);
+  }
+}
+
+/* İnce ölçüm ızgarası — hero ve koyu şeritlerde teknik doku */
+@utility gridlines {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-line-strong) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-line-strong) 55%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility gridlines-dark {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-carbon-line) 80%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-carbon-line) 80%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
 
 /* ============================================================
    SCROLL REVEAL
-   `v-reveal` direktifi yalnızca `data-reveal` özniteliğini ve görünürlük
-   bayrağını yönetir; geçişin kendisi burada. JS'in kapalı olduğu veya
-   direktifin çalışmadığı durumda içerik görünür kalır — bu yüzden
-   başlangıç durumu `[data-reveal]` seçicisine bağlı, `opacity: 0`
-   varsayılan DEĞİL.
+   Başlangıç durumu `[data-reveal]` seçicisine bağlı; direktif
+   çalışmazsa içerik görünür kalıyor.
    ============================================================ */
 
 [data-reveal] {
   opacity: 0;
   transition:
-    opacity 700ms var(--ease-out-expo),
-    transform 700ms var(--ease-out-expo);
+    opacity 600ms var(--ease-out-expo),
+    transform 600ms var(--ease-out-expo);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
 [data-reveal='up'] {
-  transform: translateY(22px);
+  transform: translateY(16px);
 }
 [data-reveal='fade'] {
   transform: none;
 }
 [data-reveal='scale'] {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 [data-reveal='left'] {
-  transform: translateX(-24px);
+  transform: translateX(-20px);
 }
 [data-reveal='right'] {
-  transform: translateX(24px);
+  transform: translateX(20px);
 }
 [data-reveal].is-revealed {
   opacity: 1;

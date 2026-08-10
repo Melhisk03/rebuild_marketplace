@@ -2,17 +2,14 @@
 import { ChevronDown } from 'lucide-vue-next'
 
 /**
- * Filtre açılırı.
+ * Filtre açılırı — biçimlendirilmiş NATIVE `<select>`.
  *
- * Özel bir dropdown değil, biçimlendirilmiş NATIVE `<select>`. Gerekçe:
- * mobilde işletim sisteminin kendi seçicisi her özel çözümden iyi,
- * klavye ve ekran okuyucu davranışı bedavaya geliyor ve sıfır JS.
- * Görsel bütünlük `appearance: none` + kendi okumuzla sağlanıyor.
+ * Özel dropdown değil: mobilde işletim sisteminin kendi seçicisi her özel
+ * çözümden iyi, klavye ve ekran okuyucu davranışı bedavaya geliyor, sıfır JS.
  */
 defineProps<{
   label: string
   options: { value: string; label: string }[]
-  /** Filtre aktifken kenarlık amber'a dönüyor */
   active?: boolean
 }>()
 
@@ -27,17 +24,18 @@ const id = useId()
       <select
         :id="id"
         v-model="model"
-        class="font-display text-bone w-full cursor-pointer appearance-none border bg-carbon py-2.5 pr-9 pl-3 text-fluid-sm transition-colors duration-300 hover:border-concrete focus:outline-none"
-        :class="active ? 'border-amber/60' : 'border-steel'"
+        class="field cursor-pointer appearance-none pr-9 font-display"
+        :class="active && 'border-amber bg-amber-wash text-amber-ink'"
       >
-        <option v-for="option in options" :key="option.value" :value="option.value" class="bg-carbon">
+        <option v-for="option in options" :key="option.value" :value="option.value">
           {{ option.label }}
         </option>
       </select>
       <ChevronDown
         :size="15"
-        :stroke-width="1.75"
-        class="text-concrete pointer-events-none absolute top-1/2 right-3 -translate-y-1/2"
+        :stroke-width="2"
+        class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2"
+        :class="active ? 'text-amber-ink' : 'text-mute'"
       />
     </div>
   </div>

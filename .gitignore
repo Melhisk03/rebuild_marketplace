@@ -12,3 +12,5 @@ dist
 # aşamasının kontak baskıları. Gerekirse `npm run images` yeniden indirir.
 tools/sources/
 tools/candidates/
+
+.vercel

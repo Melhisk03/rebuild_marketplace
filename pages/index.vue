@@ -34,7 +34,11 @@ function pickCategory(id: CategoryId) {
     <AppNavbar />
 
     <main>
-      <HeroSection />
+      <HeroSection
+        @featured-click="open($event)"
+        @featured-buy="open($event, 'buy')"
+        @featured-offer="open($event, 'offer')"
+      />
       <MarketplaceSection
         @open="open($event)"
         @buy="open($event, 'buy')"

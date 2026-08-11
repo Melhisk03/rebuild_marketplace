@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Search, MapPin, ChevronDown, ShieldCheck, Truck, Tag } from 'lucide-vue-next'
-import { CATEGORIES } from '~/data/categories'
+import { Search, MapPin, ChevronDown, ShieldCheck, Truck, Tag, BadgeCheck } from 'lucide-vue-next'
+import { CATEGORIES, CATEGORY_BY_ID } from '~/data/categories'
 import { CITIES, PRODUCTS } from '~/data/products'
 import { STATS } from '~/data/site'
 
@@ -29,6 +29,10 @@ const counts = computed(() => {
   return map
 })
 
+/** Öne çıkan ürün (featured) — sağ tarafta vitrin olarak gösteriliyor. */
+const featured = computed(() => PRODUCTS.find(p => p.featured) || PRODUCTS[0])
+const featuredCategory = computed(() => CATEGORY_BY_ID[featured.value.categoryId])
+
 function goToResults() {
   document.getElementById('malzemeler')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
@@ -37,6 +41,12 @@ function pickChip(id: string) {
   category.value = category.value === id ? 'all' : (id as typeof category.value)
   goToResults()
 }
+
+const emit = defineEmits<{
+  'featured-click': [typeof featured]
+  'featured-buy': [typeof featured]
+  'featured-offer': [typeof featured]
+}>()
 
 /** Son eklenen ilanlar şeridi; iki kez basılıyor ki kaydırma kesintisiz olsun. */
 const recent = computed(() =>
@@ -65,8 +75,12 @@ const promises = [
     />
 
     <div class="shell">
-      <!-- Başlık bloğu: kısa ve iddiasız, yeri aramaya bırakıyor -->
-      <div class="max-w-3xl">
+      <!-- Grid layout: sol taraf (7), sağ taraf (5) — reference design -->
+      <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <!-- SOL TARAF: Başlık bloğu ve arama (7 cols) -->
+        <div class="lg:col-span-7">
+          <!-- Başlık bloğu: kısa ve iddiasız, yeri aramaya bırakıyor -->
+          <div class="max-w-3xl">
         <p v-reveal="{ as: 'fade' }" class="pill border border-amber-edge bg-amber-wash text-amber-ink">
           <span class="size-1.5 rounded-full bg-amber" />
           İnşaat malzemeleri pazaryeri
@@ -193,6 +207,97 @@ const promises = [
             <span class="text-mute text-fluid-xs">{{ s.label }}</span>
           </div>
         </dl>
+      </div>
+        </div>
+
+        <!-- SAĞ TARAF: Öne çıkan ürün kartı (5 cols) -->
+        <div v-reveal="{ as: 'up', delay: 120 }" class="hidden lg:block lg:col-span-5 relative">
+          <article class="bg-paper rounded-3xl p-4 border border-line shadow-lift overflow-hidden flex flex-col">
+
+            <!-- Ürün Görsel -->
+            <button
+              type="button"
+              class="relative block w-full overflow-hidden text-left rounded-2xl mb-4"
+              style="aspect-ratio: 4/3"
+              :aria-label="`${featured.name} detayını aç`"
+              @click="$emit('featured-click', featured)"
+            >
+              <MaterialPlate :plate="featured.plate" />
+
+              <!-- Üst Rozetler -->
+              <div class="absolute top-3 left-3 flex gap-2">
+                <span class="pill bg-ok text-white text-fluid-xs font-bold px-3 py-1 flex items-center gap-1 shadow-sm">
+                  <ShieldCheck :size="13" :stroke-width="2" />
+                  Escrow Korumalı
+                </span>
+              </div>
+
+              <span class="absolute top-3 right-3 pill bg-ink text-amber text-fluid-xs font-bold px-3 py-1 shadow">
+                {{ formatQuantity(featured.quantity) }} {{ featured.unit }} Stok
+              </span>
+
+              <!-- Konum Pill (Alt) -->
+              <div class="absolute bottom-3 left-3 pill bg-paper/95 text-ink text-fluid-xs font-bold px-3 py-1.5 border border-line shadow-sm flex items-center gap-1.5">
+                <MapPin :size="14" :stroke-width="2" class="shrink-0 text-amber-ink" />
+                <span>{{ featured.city }} (24 km uzaklıkta)</span>
+              </div>
+            </button>
+
+            <!-- Kart Gövdesi -->
+            <div class="flex flex-1 flex-col px-2">
+
+              <div class="mb-2">
+                <h3 class="font-display text-fluid-base leading-snug font-semibold text-ink">
+                  {{ featured.name }}
+                </h3>
+                <p class="text-mute mt-1 text-fluid-xs">{{ featured.seller.name }}<span v-if="featured.seller.verified" class="flex items-center gap-0.5 inline-flex ml-1">
+                  <BadgeCheck :size="12" :stroke-width="2" class="text-info" /> (VKN Onaylı)
+                </span></p>
+              </div>
+
+              <!-- Lojistik Widget -->
+              <div class="bg-brand-50 border border-brand-100 rounded-2xl p-3 my-3">
+                <div class="flex items-center justify-between text-fluid-xs font-bold text-brand-700 mb-0.5">
+                  <span class="flex items-center gap-1.5">
+                    <Truck :size="15" :stroke-width="2" />
+                    Entegre Navlun & Vinç
+                  </span>
+                  <span class="text-amber-ink">+3.200 TL</span>
+                </div>
+                <div class="text-[10px] text-slate flex justify-between items-center font-medium">
+                  <span>Vinçli Tır ile Şantiyeye Teslim</span>
+                  <span class="text-ok font-bold">Bugün Sevkiyat</span>
+                </div>
+              </div>
+
+              <!-- Fiyat -->
+              <div class="flex items-center justify-between pt-2">
+                <div>
+                  <p class="text-mute text-fluid-xs line-through tnum">{{ formatPrice(featured.price * 1.12) }}</p>
+                  <p class="font-display text-amber-ink tnum text-fluid-xl leading-none font-bold">
+                    {{ formatPrice(featured.price) }} <span class="text-fluid-xs font-normal text-mute">/ {{ featured.unit }}</span>
+                  </p>
+                </div>
+                <button type="button" class="btn-base btn-buy px-5 py-3 flex items-center gap-1.5" @click="$emit('featured-buy', featured)">
+                  <ShieldCheck :size="16" :stroke-width="2" />
+                  <span>Güvenli Al</span>
+                </button>
+              </div>
+            </div>
+
+          </article>
+
+          <!-- Yüzen ESG Rozeti -->
+          <div class="hidden sm:flex absolute -bottom-6 -left-6 bg-paper p-3.5 rounded-2xl border border-line shadow-lift items-center gap-3">
+            <div class="size-10 bg-ok-wash border border-ok rounded-xl flex items-center justify-center text-ok shrink-0">
+              🌿
+            </div>
+            <div>
+              <p class="text-fluid-xs font-bold text-ink">1.85 Ton CO₂ Engellendi</p>
+              <p class="text-[10px] text-mute font-medium">Döngüsel Ekonomi ESG Skoru</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -60,15 +60,11 @@ const promises = [
 </script>
 
 <template>
-  <section id="top" class="relative isolate overflow-hidden bg-canvas pt-28 pb-16 sm:pb-24 border-b-2 border-brand-100">
-    <!-- Zemin: ölçüm ızgarası + iki yumuşak blob. Temiz ve minimal. -->
+  <section id="top" class="relative isolate overflow-hidden bg-canvas pt-28 pb-16 sm:pb-24 border-b-4 border-line">
+    <!-- Zemin: ölçüm ızgarası + amber blob. Temiz ve minimal. -->
     <div class="gridlines pointer-events-none absolute inset-0 -z-10 opacity-[0.4]" aria-hidden="true" />
     <div
       class="pointer-events-none absolute -top-40 -right-24 -z-10 size-[36rem] rounded-full bg-[radial-gradient(circle,var(--color-amber-wash),transparent_68%)]"
-      aria-hidden="true"
-    />
-    <div
-      class="pointer-events-none absolute -bottom-48 -left-32 -z-10 size-[32rem] rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.10),transparent_70%)]"
       aria-hidden="true"
     />
 

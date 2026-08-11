@@ -21,7 +21,6 @@ export const NAV_LINKS = [
 export const STATS = [
   { value: 1250, suffix: '+', label: 'Listelenen Malzeme', note: 'Aktif ilan' },
   { value: 340, suffix: '+', label: 'Tamamlanan Satış', note: 'Son 12 ay' },
-  { value: 18, suffix: '', label: 'Aktif Kategori', note: 'Ana ve alt grup' },
   { value: 12500, suffix: '+', label: 'Değerlendirilen Malzeme', note: 'Ton eşdeğeri' },
 ]
 

@@ -56,29 +56,27 @@ const recent = computed(() =>
 const promises = [
   { icon: ShieldCheck, text: 'Doğrulanmış kurumsal satıcı' },
   { icon: Tag, text: 'Piyasa altı stok fiyatı' },
-  { icon: Truck, text: 'Tek partide teslim' },
 ]
 </script>
 
 <template>
-  <section id="top" class="relative isolate overflow-hidden bg-canvas pt-28 pb-10 sm:pb-14">
-    <!-- Zemin: ölçüm ızgarası + iki yumuşak amber leke. Fotoğraf yok;
-         ürünler zaten hemen altta, hero'nun işi onlara yol açmak. -->
-    <div class="gridlines pointer-events-none absolute inset-0 -z-10 opacity-[0.45]" aria-hidden="true" />
+  <section id="top" class="relative isolate overflow-hidden pt-28 pb-16 sm:pb-24 border-b-2 border-brand-100" style="background-color: #ddd6ce;">
+    <!-- Zemin: ölçüm ızgarası + iki yumuşak blob. Temiz ve minimal. -->
+    <div class="gridlines pointer-events-none absolute inset-0 -z-10 opacity-[0.4]" aria-hidden="true" />
     <div
-      class="pointer-events-none absolute -top-40 -right-24 -z-10 size-[34rem] rounded-full bg-[radial-gradient(circle,var(--color-amber-wash),transparent_68%)]"
+      class="pointer-events-none absolute -top-40 -right-24 -z-10 size-[36rem] rounded-full bg-[radial-gradient(circle,var(--color-amber-wash),transparent_68%)]"
       aria-hidden="true"
     />
     <div
-      class="pointer-events-none absolute -bottom-56 -left-32 -z-10 size-[30rem] rounded-full bg-[radial-gradient(circle,#eaf0fe,transparent_70%)]"
+      class="pointer-events-none absolute -bottom-48 -left-32 -z-10 size-[32rem] rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.10),transparent_70%)]"
       aria-hidden="true"
     />
 
     <div class="shell">
       <!-- Grid layout: sol taraf (7), sağ taraf (5) — reference design -->
       <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-        <!-- SOL TARAF: Başlık bloğu ve arama (7 cols) -->
-        <div class="lg:col-span-7">
+        <!-- SOL TARAF: Başlık bloğu ve arama (8 cols) -->
+        <div class="lg:col-span-8">
           <!-- Başlık bloğu: kısa ve iddiasız, yeri aramaya bırakıyor -->
           <div class="max-w-3xl">
         <p v-reveal="{ as: 'fade' }" class="pill border border-amber-edge bg-amber-wash text-amber-ink">
@@ -86,21 +84,21 @@ const promises = [
           İnşaat malzemeleri pazaryeri
         </p>
 
-        <h1 v-reveal="{ delay: 60 }" class="text-fluid-hero mt-4 font-semibold text-ink">
+        <h1 v-reveal="{ delay: 60 }" class="mt-4 font-semibold text-ink leading-[1.12]" style="font-size: clamp(1.75rem, 1.5rem + 2.2vw, 3.2rem);">
           Proje fazlası malzeme,<br class="hidden sm:block" />
           <span class="text-amber-ink">satın alınmaya hazır.</span>
         </h1>
 
-        <p v-reveal="{ delay: 120 }" class="text-slate mt-4 max-w-[58ch] text-fluid-lg">
+        <p v-reveal="{ delay: 120 }" class="text-slate mt-2 max-w-[58ch] text-fluid-sm">
           Kurumsal projelerden artan kaliteli malzemeleri keşfedin. Fiyatı uygunsa hemen satın alın,
           değilse kendi teklifinizi verin.
         </p>
       </div>
 
       <!-- ---------- ARAMA ---------- -->
-      <div v-reveal="{ as: 'up', delay: 180 }" class="mt-8">
+      <div v-reveal="{ as: 'up', delay: 180 }" class="mt-3">
         <div
-          class="card flex flex-col gap-2 p-2 shadow-lift lg:flex-row lg:items-center lg:gap-0 lg:rounded-full lg:p-1.5"
+          class="card flex flex-col gap-1.5 p-1.5 shadow-lift lg:flex-row lg:items-center lg:gap-0 lg:rounded-full lg:p-1"
         >
           <!-- Metin -->
           <div class="relative flex-1">
@@ -114,7 +112,7 @@ const promises = [
               type="search"
               aria-label="Malzeme ara"
               placeholder="Malzeme, marka veya standart ara — örn. nervürlü demir"
-              class="text-ink placeholder:text-mute h-12 w-full rounded-lg bg-transparent pr-3 pl-11 text-fluid-base focus:outline-none"
+              class="text-ink placeholder:text-mute h-10 w-full rounded-lg bg-transparent pr-3 pl-10 text-fluid-sm focus:outline-none"
               @keydown.enter="goToResults"
             />
           </div>
@@ -126,7 +124,7 @@ const promises = [
             <select
               v-model="category"
               aria-label="Kategori"
-              class="text-ink h-12 w-full cursor-pointer appearance-none rounded-lg bg-transparent pr-9 pl-4 text-fluid-sm focus:outline-none"
+              class="text-ink h-10 w-full cursor-pointer appearance-none rounded-lg bg-transparent pr-9 pl-4 text-fluid-xs focus:outline-none"
             >
               <option value="all">Tüm kategoriler</option>
               <option v-for="c in CATEGORIES" :key="c.id" :value="c.id">
@@ -152,7 +150,7 @@ const promises = [
             <select
               v-model="city"
               aria-label="Lokasyon"
-              class="text-ink h-12 w-full cursor-pointer appearance-none rounded-lg bg-transparent pr-9 pl-11 text-fluid-sm focus:outline-none"
+              class="text-ink h-10 w-full cursor-pointer appearance-none rounded-lg bg-transparent pr-9 pl-10 text-fluid-xs focus:outline-none"
             >
               <option value="all">Tüm Türkiye</option>
               <option v-for="c in CITIES" :key="c" :value="c">{{ c }}</option>
@@ -164,14 +162,14 @@ const promises = [
             />
           </div>
 
-          <button type="button" class="btn-base btn-buy h-12 lg:px-7" @click="goToResults">
+          <button type="button" class="btn-base btn-buy h-10 lg:px-6 rounded-full font-bold text-fluid-xs" @click="goToResults">
             <Search :size="17" :stroke-width="2.2" class="lg:hidden" />
             Ara
           </button>
         </div>
 
         <!-- Hızlı kategori çipleri -->
-        <div class="mt-4 flex flex-wrap gap-2">
+        <div class="mt-2 flex flex-wrap gap-1.5">
           <button
             v-for="c in quickCategories"
             :key="c.id"
@@ -181,7 +179,6 @@ const promises = [
             @click="pickChip(c.id)"
           >
             {{ c.name }}
-            <span class="text-mute text-fluid-xs">{{ counts[c.id] ?? 0 }}</span>
           </button>
         </div>
       </div>
@@ -189,29 +186,33 @@ const promises = [
       <!-- ---------- GÜVEN ŞERİDİ ---------- -->
       <div
         v-reveal="{ as: 'fade', delay: 260 }"
-        class="border-line mt-10 flex flex-col gap-6 border-t pt-6 lg:flex-row lg:items-center lg:justify-between"
+        class="border-line mt-4 flex flex-col gap-4 border-t pt-4 lg:flex-row lg:justify-between lg:items-start"
       >
-        <ul class="flex flex-wrap gap-x-7 gap-y-3">
-          <li v-for="p in promises" :key="p.text" class="text-slate inline-flex items-center gap-2 text-fluid-sm">
-            <component :is="p.icon" :size="17" :stroke-width="1.75" class="text-amber-ink shrink-0" />
-            {{ p.text }}
+        <!-- Promises (Sol) -->
+        <ul class="flex flex-col gap-2">
+          <li v-for="p in promises" :key="p.text" class="inline-flex items-center gap-2">
+            <div class="size-7 rounded-lg bg-amber-wash flex items-center justify-center shrink-0">
+              <component :is="p.icon" :size="16" :stroke-width="2" class="text-amber-ink" />
+            </div>
+            <span class="text-slate font-medium text-fluid-xs">{{ p.text }}</span>
           </li>
         </ul>
 
-        <dl class="flex flex-wrap gap-x-8 gap-y-3">
-          <div v-for="s in STATS.slice(0, 3)" :key="s.label" class="flex items-baseline gap-2">
+        <!-- Stats (Sağ) - Yan Yana -->
+        <dl class="flex flex-wrap gap-6 lg:gap-8">
+          <div v-for="s in STATS.slice(0, 2)" :key="s.label" class="flex flex-col gap-0.5">
             <dt class="sr-only">{{ s.label }}</dt>
-            <dd class="font-display text-ink tnum text-fluid-lg font-semibold">
-              {{ s.value.toLocaleString('tr-TR') }}{{ s.suffix }}
+            <dd class="font-display text-ink tnum font-black" style="font-size: clamp(1.25rem, 1rem + 0.6vw, 1.625rem);">
+              {{ s.value.toLocaleString('tr-TR') }}<span class="text-amber-ink">{{ s.suffix }}</span>
             </dd>
-            <span class="text-mute text-fluid-xs">{{ s.label }}</span>
+            <span class="text-mute text-fluid-xs font-medium">{{ s.label }}</span>
           </div>
         </dl>
       </div>
         </div>
 
-        <!-- SAĞ TARAF: Öne çıkan ürün kartı (5 cols) -->
-        <div v-reveal="{ as: 'up', delay: 120 }" class="hidden lg:block lg:col-span-5 relative">
+        <!-- SAĞ TARAF: Öne çıkan ürün kartı (4 cols) -->
+        <div v-reveal="{ as: 'up', delay: 120 }" class="hidden lg:block lg:col-span-4 relative">
           <article class="bg-paper rounded-3xl p-4 border border-line shadow-lift overflow-hidden flex flex-col">
 
             <!-- Ürün Görsel -->

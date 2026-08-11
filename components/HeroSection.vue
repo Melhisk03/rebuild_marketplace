@@ -60,7 +60,7 @@ const promises = [
 </script>
 
 <template>
-  <section id="top" class="relative isolate overflow-hidden pt-28 pb-16 sm:pb-24 border-b-2 border-brand-100" style="background-color: #ddd6ce;">
+  <section id="top" class="relative isolate overflow-hidden bg-canvas pt-28 pb-16 sm:pb-24 border-b-2 border-brand-100">
     <!-- Zemin: ölçüm ızgarası + iki yumuşak blob. Temiz ve minimal. -->
     <div class="gridlines pointer-events-none absolute inset-0 -z-10 opacity-[0.4]" aria-hidden="true" />
     <div
